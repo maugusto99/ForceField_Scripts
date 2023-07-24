@@ -1,0 +1,10 @@
+#!/bin/bash
+
+# read -p "Number of steps: " number
+# read -p "Interval of steps: " steps
+number=30000
+steps=200
+let lines_to_print=($number/$steps)+1
+tac output | grep TotEng -m1 -B $lines_to_print | tac > output.dat
+sed -i -e '1d' -e 's/^\s\+//' output.dat
+

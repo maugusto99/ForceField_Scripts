@@ -1,0 +1,79 @@
+#!/usr/bin/env python3
+import os
+
+import matplotlib.pyplot as plt
+import numpy as np
+
+# Remove existing epsilon and sigma files
+os.system('rm -f epsilon.*')
+os.system('rm -f sigma.*')
+
+CurrentDirectory = os.getcwd()
+# Count the number of cycle directories
+cycles = len([d for d in os.listdir('.') if d.startswith('Cycle')])
+
+# Loop over all cycle directories and extract data
+for i in range(1, cycles+1):
+    for j in range(7, 11):
+        with open(CurrentDirectory + f'/Cycle{i}/3.fit/in.mult.lammps', 'r') as f:
+            lines = f.readlines()
+            epsilon = lines[j-1].split()[3]
+            sigma = lines[j-1].split()[4]
+            with open(f'epsilon.{j}', 'a') as f_eps, open(f'sigma.{j}', 'a') as f_sig:
+                f_eps.write(f'{i} {epsilon}\n')
+                f_sig.write(f'{i} {sigma}\n')
+
+
+# Load the data from the file
+epsilon_7 = np.loadtxt('epsilon.7')
+epsilon_8 = np.loadtxt('epsilon.8')
+epsilon_9 = np.loadtxt('epsilon.9')
+epsilon_10 = np.loadtxt('epsilon.10')
+sigma_7 = np.loadtxt('sigma.7')
+sigma_8 = np.loadtxt('sigma.8')
+sigma_9 = np.loadtxt('sigma.9')
+sigma_10 = np.loadtxt('sigma.10')
+
+# Extract the x and y data from the array
+x_epsilon_7 = epsilon_7[:, 0]
+y_epsilon_7 = epsilon_7[:, 1]
+x_epsilon_8 = epsilon_8[:, 0]
+y_epsilon_8 = epsilon_8[:, 1]
+x_epsilon_9 = epsilon_9[:, 0]
+y_epsilon_9 = epsilon_9[:, 1]
+x_epsilon_10 = epsilon_10[:, 0]
+y_epsilon_10 = epsilon_10[:, 1]
+
+x_sigma_7 = sigma_7[:, 0]
+y_sigma_7 = sigma_7[:, 1]
+x_sigma_8 = sigma_8[:, 0]
+y_sigma_8 = sigma_8[:, 1]
+x_sigma_9 = sigma_9[:, 0]
+y_sigma_9 = sigma_9[:, 1]
+x_sigma_10 = sigma_10[:, 0]
+y_sigma_10 = sigma_10[:, 1]
+
+# Plot the data
+plt.plot(x_epsilon_7, y_epsilon_7, marker='o', label='H1-O2')
+plt.plot(x_epsilon_8, y_epsilon_8, marker='x', label='O2-O1')
+plt.plot(x_epsilon_9, y_epsilon_9, marker='s', label='C2-O2')
+plt.plot(x_epsilon_10, y_epsilon_10, marker='^', label='C1-O2')
+plt.xlabel('Cycle')
+plt.ylabel('Epsilon')
+plt.title('Epsilon')
+plt.grid()
+plt.legend()
+plt.savefig("epsilon.png")
+plt.close()
+
+plt.plot(x_sigma_7, y_sigma_7, marker='o', label='H1-O2')
+plt.plot(x_sigma_8, y_sigma_8, marker='x', label='O1-O2')
+plt.plot(x_sigma_9, y_sigma_9, marker='s', label='C2-O2')
+plt.plot(x_sigma_10, y_sigma_10, marker='^', label='C1-O2')
+plt.xlabel('Cycle')
+plt.ylabel('Sigma')
+plt.title('Sigma')
+plt.grid()
+plt.legend()
+plt.savefig("sigma.png")
+plt.close()
